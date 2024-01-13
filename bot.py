@@ -16,14 +16,16 @@ class Bot:
         team_id = game_message.currentTeamId
         my_ship = game_message.ships.get(team_id)
         other_ships_ids = [shipId for shipId in game_message.shipsPositions.keys() if shipId != team_id]
-
+        turretNumbers = len(StationsData.turrets)
+        
         # Find who's not doing anything and try to give them a job?
         idle_crewmates = [crewmate for crewmate in my_ship.crew if crewmate.currentStation is None and crewmate.destination is None]
 
         for crewmate in idle_crewmates:
             visitable_stations = crewmate.distanceFromStations.shields + crewmate.distanceFromStations.turrets + crewmate.distanceFromStations.helms + crewmate.distanceFromStations.radars
-            station_to_move_to = random.choice(visitable_stations)
-            actions.append(CrewMoveAction(crewmate.id, station_to_move_to.stationPosition))
+            if(crewmate.distanceFromStations.turrets):
+                
+            actions.append(CrewMoveAction(crewmate.id, crewmate.distanceFromStations.shields))
 
         # Now crew members at stations should do something!
         operatedTurretStations = [station for station in my_ship.stations.turrets if station.operator is not None]
