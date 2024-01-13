@@ -33,7 +33,7 @@ class Bot:
                 actions.append(CrewMoveAction(crewmate.id, ))
             station_to_move_to = random.choice(visitable_stations)
             actions.append(CrewMoveAction(crewmate.id, visitable_shields))
-            a
+            a = "test"
 
         # Now crew members at stations should do something!
         operatedTurretStations = [station for station in my_ship.stations.turrets if station.operator is not None]
