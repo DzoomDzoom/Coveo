@@ -5,7 +5,11 @@ import random
 class Bot:
     def __init__(self):
         print("Initializing your super mega duper bot")
-
+        self.isAtShield = False
+        self.isAtTurret = False
+        self.isAtRadar = False
+        self.isAtHelm = False
+        self.count = 2
 
     def get_next_move(self, game_message: GameMessage):
         """
@@ -16,32 +20,30 @@ class Bot:
         team_id = game_message.currentTeamId
         my_ship = game_message.ships.get(team_id)
         other_ships_ids = [shipId for shipId in game_message.shipsPositions.keys() if shipId != team_id]
-        turretNumbers = len(StationsData.turrets)
-        
+        shipId = other_ships_ids[0]
         # Find who's not doing anything and try to give them a job?
         idle_crewmates = [crewmate for crewmate in my_ship.crew if crewmate.currentStation is None and crewmate.destination is None]
 
         for crewmate in idle_crewmates:
-            visitable_stations = crewmate.distanceFromStations.shields + crewmate.distanceFromStations.turrets + crewmate.distanceFromStations.helms + crewmate.distanceFromStations.radars
-            visitable_shields = []
-            visitable_turrets = []
-            visitable_helms = []
-            visitable_radars = []
-            for i in crewmate.distanceFromStations.shields:
-                visitable_shields.append((i.distance, i.stationPosition, i.stationId))
-            for i in crewmate.distanceFromStations.helms:
-                visitable_helms.append((i.distance, i.stationPosition, i.stationId))
-            for i in crewmate.distanceFromStations.radars:
-                visitable_radars.append((i.distance, i.stationPosition, i.stationId))
-            sorted(visitable_radars)
-            sorted(visitable_shields)
-            sorted(visitable_helms)
-            if(crewmate.distanceFromStations.turrets & (TurretStation.turretType == "EMP")):                
-                actions.append(CrewMoveAction(crewmate.id, ))
-            station_to_move_to = random.choice(visitable_stations)
-            actions.append(CrewMoveAction(crewmate.id, visitable_shields))
-            a = "test"
-
+            visitable_shields = crewmate.distanceFromStations.shields 
+            visible_turrets = crewmate.distanceFromStations.turrets 
+            visible_helms = crewmate.distanceFromStations.helms
+            shield_to_move_to = random.choice(visitable_shields)
+            turret_to_move_to = random.choice(visible_turrets)
+            helm_to_move_to = random.choice(visible_helms)
+            if(self.isAtShield == False):
+                actions.append(CrewMoveAction(crewmate.id, shield_to_move_to.stationPosition))
+                self.isAtShield = True
+                continue
+            if(self.count != 0):
+                actions.append(CrewMoveAction(crewmate.id, turret_to_move_to.stationPosition))
+                self.count -= 1
+                continue
+            if(self.isAtHelm ==False):
+                actions.append(CrewMoveAction(crewmate.id, helm_to_move_to.stationPosition))
+                self.isAtHelm = True
+                continue
+            
         # Now crew members at stations should do something!
         operatedTurretStations = [station for station in my_ship.stations.turrets if station.operator is not None]
         for turret_station in operatedTurretStations:
@@ -50,8 +52,8 @@ class Bot:
                 TurretChargeAction(turret_station.id),
                 # Aim the turret itself.
                 TurretLookAtAction(turret_station.id, 
-                                   Vector(random.uniform(0, game_message.constants.world.width), random.uniform(0, game_message.constants.world.height))
-                ),
+                                   Vector(game_message.shipsPositions.get(shipId).x, game_message.shipsPositions.get(shipId).y))
+                ,
                 # Shoot!
                 TurretShootAction(turret_station.id)
             ]
@@ -60,7 +62,7 @@ class Bot:
 
         operatedHelmStation = [station for station in my_ship.stations.helms if station.operator is not None]
         if operatedHelmStation:
-            actions.append(ShipRotateAction(random.uniform(0, 360)))
+            actions.append(ShipLookAtAction(game_message.shipsPositions.get(shipId)))
 
         operatedRadarStation = [station for station in my_ship.stations.radars if station.operator is not None]
         for radar_station in operatedRadarStation:
