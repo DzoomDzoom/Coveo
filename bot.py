@@ -29,7 +29,7 @@ class Bot:
             visitable_turrets = crewmate.distanceFromStations.turrets
             visitable_helms = crewmate.distanceFromStations.helms
             visitable_radars = crewmate.distanceFromStations.radars
-            if(crewmate.distanceFromStations.turrets & (crewmate.distanceFromStations.turrets[]| TurretStation.turretType == "EMP")):                
+            if(crewmate.distanceFromStations.turrets & (TurretStation.turretType == "EMP")):                
                 actions.append(CrewMoveAction(crewmate.id, ))
             station_to_move_to = random.choice(visitable_stations)
             actions.append(CrewMoveAction(crewmate.id, visitable_shields))
