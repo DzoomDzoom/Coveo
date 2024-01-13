@@ -24,11 +24,18 @@ class Bot:
         for crewmate in idle_crewmates:
             visitable_stations = crewmate.distanceFromStations.shields + crewmate.distanceFromStations.turrets + crewmate.distanceFromStations.helms + crewmate.distanceFromStations.radars
             visitable_shields = []
+            visitable_turrets = []
+            visitable_helms = []
+            visitable_radars = []
             for i in crewmate.distanceFromStations.shields:
                 visitable_shields.append((i.distance, i.stationPosition, i.stationId))
-            visitable_turrets = crewmate.distanceFromStations.turrets
-            visitable_helms = crewmate.distanceFromStations.helms
-            visitable_radars = crewmate.distanceFromStations.radars
+            for i in crewmate.distanceFromStations.helms:
+                visitable_helms.append((i.distance, i.stationPosition, i.stationId))
+            for i in crewmate.distanceFromStations.radars:
+                visitable_radars.append((i.distance, i.stationPosition, i.stationId))
+            sorted(visitable_radars)
+            sorted(visitable_shields)
+            sorted(visitable_helms)
             if(crewmate.distanceFromStations.turrets & (TurretStation.turretType == "EMP")):                
                 actions.append(CrewMoveAction(crewmate.id, ))
             station_to_move_to = random.choice(visitable_stations)
