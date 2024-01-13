@@ -23,9 +23,17 @@ class Bot:
 
         for crewmate in idle_crewmates:
             visitable_stations = crewmate.distanceFromStations.shields + crewmate.distanceFromStations.turrets + crewmate.distanceFromStations.helms + crewmate.distanceFromStations.radars
-            if(crewmate.distanceFromStations.turrets):
-                
-            actions.append(CrewMoveAction(crewmate.id, crewmate.distanceFromStations.shields))
+            visitable_shields = []
+            for i in crewmate.distanceFromStations.shields:
+                visitable_shields.append((i.distance, i.stationPosition, i.stationId))
+            visitable_turrets = crewmate.distanceFromStations.turrets
+            visitable_helms = crewmate.distanceFromStations.helms
+            visitable_radars = crewmate.distanceFromStations.radars
+            if(crewmate.distanceFromStations.turrets & (crewmate.distanceFromStations.turrets[]| TurretStation.turretType == "EMP")):                
+                actions.append(CrewMoveAction(crewmate.id, ))
+            station_to_move_to = random.choice(visitable_stations)
+            actions.append(CrewMoveAction(crewmate.id, visitable_shields))
+            a
 
         # Now crew members at stations should do something!
         operatedTurretStations = [station for station in my_ship.stations.turrets if station.operator is not None]
