@@ -22,6 +22,10 @@ class Bot:
 
         for crewmate in idle_crewmates:
             visitable_stations = crewmate.distanceFromStations.shields + crewmate.distanceFromStations.turrets + crewmate.distanceFromStations.helms + crewmate.distanceFromStations.radars
+            visitable_shields = crewmate.distanceFromStations.shields
+            visitable_turrets = crewmate.distanceFromStations.turrets
+            visitable_helms = crewmate.distanceFromStations.helms
+            visitable_radars = crewmate.distanceFromStations.radars
             station_to_move_to = random.choice(visitable_stations)
             actions.append(CrewMoveAction(crewmate.id, station_to_move_to.stationPosition))
 
